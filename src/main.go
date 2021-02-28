@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Simple CPU Temperature Information Strucutre
+// TempInfo - Simple CPU Temperature Information Strucutre
 type TempInfo struct {
 	packageTemp float64
 	coreTemps   []float64
