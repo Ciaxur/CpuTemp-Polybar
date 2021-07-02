@@ -30,7 +30,13 @@ func main() {
 		}
 
 		// PARSE DATA FROM INFO
-		parsers.ParseOutput_intel(out, &tempInfo)
+		if args.CpuType == "intel" {
+			parsers.ParseOutput_intel(out, &tempInfo)
+		} else if args.CpuType == "amd" {
+			parsers.ParseOutput_amd(out, &tempInfo)
+		} else {
+			panic("Unknown CPU Type Arguemnt. Compatible CPU Types: intel, amd")
+		}
 
 		// CHOOSE APPROPRIATE EMOJI
 		tempStatusE := tempEmojis[0] // Temp < 40C

@@ -2,6 +2,7 @@ package parsers
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -32,7 +33,7 @@ func handleError(e error) {
 }
 
 /**
- * Parses Output into Object
+ * Parses Output for Intel CPUs into Object
  */
 func ParseOutput_intel(output []byte, tInfo *TempInfo) {
 	strOut := string(output)
@@ -50,7 +51,7 @@ func ParseOutput_intel(output []byte, tInfo *TempInfo) {
 	handleError(e)
 	tInfo.PackageTemp = val
 
-	// // GET CORE TEMP SECTION
+	// GET CORE TEMP SECTION
 	foundAllCores := false
 	var coreSection string
 	tInfo.CoreTemps = make([]float64, 0, 10) // Allocate 10 Spots
@@ -77,4 +78,23 @@ func ParseOutput_intel(output []byte, tInfo *TempInfo) {
 		// STORE TEMP
 		tInfo.CoreTemps = append(tInfo.CoreTemps, temp)
 	}
+}
+
+/**
+ * Parses Output for AMD CPUs into Object
+ */
+func ParseOutput_amd(output []byte, tInfo *TempInfo) {
+	strOut := string(output)
+
+	// GET DIE SECTION
+	index := strings.Index(strOut, "die")
+	index = index + (strings.Index(strOut[index:], "\n"))
+	endIndex := index + (strings.Index(strOut[index+1:], "\n"))
+
+	// REGEX TIME! GET THOSE TEMPS
+	re := regexp.MustCompile(`(\d+.\d+)`)
+	re_result := re.FindString(strOut[index:endIndex])
+	die_temp, e := strconv.ParseFloat(re_result, 64)
+	handleError(e)
+	tInfo.PackageTemp = die_temp
 }
