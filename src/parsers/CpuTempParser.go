@@ -83,17 +83,29 @@ func ParseOutput_intel(output []byte, tInfo *TempInfo) {
 /**
  * Parses Output for AMD CPUs into Object
  */
-func ParseOutput_amd(output []byte, tInfo *TempInfo) {
+func ParseOutput_amd(output []byte, tInfo *TempInfo, tempType string) {
 	strOut := string(output)
+	var finalStr string
 
-	// GET DIE SECTION
-	index := strings.Index(strOut, "die")
-	index = index + (strings.Index(strOut[index:], "\n"))
-	endIndex := index + (strings.Index(strOut[index+1:], "\n"))
+	switch tempType {
+	// GET TCTL SECTION
+	case "tctl":
+		index := strings.Index(strOut, "Tctl")
+		index = index + (strings.Index(strOut[index:], "\n"))
+		endIndex := index + (strings.Index(strOut[index+1:], "\n"))
+		finalStr = strOut[index:endIndex]
+
+	case "die":
+		// GET DIE SECTION
+		index := strings.Index(strOut, "die")
+		index = index + (strings.Index(strOut[index:], "\n"))
+		endIndex := index + (strings.Index(strOut[index+1:], "\n"))
+		finalStr = strOut[index:endIndex]
+	}
 
 	// REGEX TIME! GET THOSE TEMPS
 	re := regexp.MustCompile(`(\d+.\d+)`)
-	re_result := re.FindString(strOut[index:endIndex])
+	re_result := re.FindString(finalStr)
 	die_temp, e := strconv.ParseFloat(re_result, 64)
 	handleError(e)
 	tInfo.PackageTemp = die_temp

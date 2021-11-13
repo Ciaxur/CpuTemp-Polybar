@@ -14,7 +14,6 @@ func main() {
 	args := helpers.ParseInput()
 	iconClr := args.IconColor
 	strClr := args.StrColor
-	// cpuType := args.CpuType
 
 	tempEmojis := []string{"", "", "", "", ""}
 	var tempInfo parsers.TempInfo
@@ -33,7 +32,7 @@ func main() {
 		if args.CpuType == "intel" {
 			parsers.ParseOutput_intel(out, &tempInfo)
 		} else if args.CpuType == "amd" {
-			parsers.ParseOutput_amd(out, &tempInfo)
+			parsers.ParseOutput_amd(out, &tempInfo, args.CpuTempType)
 		} else {
 			panic("Unknown CPU Type Arguemnt. Compatible CPU Types: intel, amd")
 		}
